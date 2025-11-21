@@ -7,44 +7,51 @@ import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.*;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class AvroUtils {
 
-    private static final Schema ORDER_SCHEMA;
+    private static final String SCHEMA_JSON =
+            "{\n" +
+            "  \"type\": \"record\",\n" +
+            "  \"name\": \"Order\",\n" +
+            "  \"namespace\": \"com.assignment.avro\",\n" +
+            "  \"fields\": [\n" +
+            "    { \"name\": \"orderId\", \"type\": \"string\" },\n" +
+            "    { \"name\": \"product\", \"type\": \"string\" },\n" +
+            "    { \"name\": \"price\", \"type\": \"float\" }\n" +
+            "  ]\n" +
+            "}";
 
-    static {
-        try (InputStream in = AvroUtils.class.getClassLoader().getResourceAsStream("avro/order.avsc")) {
-            if (in == null)
-                throw new IllegalStateException("Cannot find avro/order.avsc");
-            ORDER_SCHEMA = new Schema.Parser().parse(in);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load schema", e);
-        }
-    }
+    private static final Schema SCHEMA = new Schema.Parser().parse(SCHEMA_JSON);
 
-    public static byte[] serializeOrder(String orderId, String product, float price) {
-        GenericRecord record = new GenericData.Record(ORDER_SCHEMA);
-        record.put("orderId", orderId);
-        record.put("product", product);
-        record.put("price", price);
+    public static byte[] serializeOrder(String orderId, String product, float price) throws IOException {
 
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-            new GenericDatumWriter<GenericRecord>(ORDER_SCHEMA).write(record, encoder);
-            encoder.flush();
-            return out.toByteArray();
-        } catch (Exception e) {
-            throw new RuntimeException("Serialization failed", e);
-        }
+        GenericRecord order = new GenericData.Record(SCHEMA);
+        order.put("orderId", orderId);
+        order.put("product", product);
+        order.put("price", price);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(output, null);
+
+        GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<>(SCHEMA);
+
+        writer.write(order, encoder);
+        encoder.flush();
+
+        return output.toByteArray();
     }
 
     public static GenericRecord deserializeOrder(byte[] data) {
-        try (ByteArrayInputStream in = new ByteArrayInputStream(data)) {
-            BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(in, null);
-            return new GenericDatumReader<GenericRecord>(ORDER_SCHEMA).read(null, decoder);
-        } catch (Exception e) {
-            throw new RuntimeException("Deserialization failed", e);
+        try {
+            GenericDatumReader<GenericRecord> reader = new GenericDatumReader<>(SCHEMA);
+            BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(data, null);
+            return reader.read(null, decoder);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to deserialize Avro Order record", e);
         }
     }
 }

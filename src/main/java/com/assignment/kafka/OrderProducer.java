@@ -36,11 +36,12 @@ public class OrderProducer {
                 ProducerRecord<String, byte[]> record =
                         new ProducerRecord<>(TOPIC, orderId, value);
 
-                producer.send(record, (m, e) -> {
-                    if (e == null) {
-                        System.out.printf("Sent order %s - %s (%.2f)\n", orderId, product, price);
+                producer.send(record, (metadata, exception) -> {
+                    if (exception == null) {
+                        System.out.printf("Sent order %s → %s (%.2f)%n",
+                                orderId, product, price);
                     } else {
-                        System.err.println("Send failed: " + e.getMessage());
+                        System.err.println("Producer failed: " + exception.getMessage());
                     }
                 });
 
