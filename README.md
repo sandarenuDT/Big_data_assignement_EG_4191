@@ -33,7 +33,7 @@ Kafka_Orders/
 | **Kafka Broker** | Apache Kafka 3.7 (WSL Manual Install) |
 | **Schema Registry** | Confluent 7.3 |
 | **Serialization** | Avro |
-| **Language** | Java 11 |
+| **Language** | Java 17 |
 | **Build Tool** | Maven |
 | **DLQ Topic** | `orders-dlq` |
 
