@@ -1,8 +1,8 @@
-# 📦 Kafka Orders Processing System
+# Kafka Orders Processing System
 
 A real-time order processing system built with Apache Kafka, featuring Avro serialization, Schema Registry integration, and automatic Dead Letter Queue (DLQ) handling.
 
-## 🎯 Features
+## Features
 
 - **Apache Kafka** running on WSL
 - **Confluent Schema Registry** for schema management
@@ -13,7 +13,7 @@ A real-time order processing system built with Apache Kafka, featuring Avro seri
 
 ---
 
-## 🗂 Project Structure
+## Project Structure
 
 ```
 Kafka_Orders/
@@ -26,7 +26,7 @@ Kafka_Orders/
 
 ---
 
-## 🧰 Technologies Used
+## Technologies Used
 
 | Component | Technology |
 |-----------|-----------|
@@ -79,23 +79,23 @@ Kafka_Orders/
 
 ---
 
-## 🚀 Running the Application
+## Running the Application
 
 Each component must run in a **separate terminal window**.
 
-### ▶️ Start Order Consumer
+### Start Order Consumer
 
 ```bash
 mvn exec:java -Dexec.mainClass=com.assignment.kafka.OrderConsumer
 ```
 
-### ▶️ Start DLQ Consumer
+### Start DLQ Consumer
 
 ```bash
 mvn exec:java -Dexec.mainClass=com.assignment.kafka.DlqConsumer
 ```
 
-### ▶️ Start Order Producer
+### Start Order Producer
 
 ```bash
 mvn exec:java -Dexec.mainClass=com.assignment.kafka.OrderProducer
@@ -103,7 +103,7 @@ mvn exec:java -Dexec.mainClass=com.assignment.kafka.OrderProducer
 
 ---
 
-## 🔁 DLQ Logic
+## DLQ Logic
 
 The consumer implements a **single retry policy**:
 
@@ -121,7 +121,7 @@ DLQ Received → key=10013 | orderId=10013 | product=Item5 | price=73.41
 
 ---
 
-## 📈 Running Average Calculation
+## Running Average Calculation
 
 The consumer maintains a running average of order prices using the formula:
 
@@ -133,7 +133,7 @@ This provides real-time insights into pricing trends without storing all histori
 
 ---
 
-## 📝 Avro Schema
+## Avro Schema
 
 ```json
 {
@@ -194,25 +194,3 @@ List all topics to verify creation:
   --bootstrap-server localhost:9092 \
   --list
 ```
-
-### Consumer Not Receiving Messages
-
-Check consumer group lag:
-
-```bash
-/mnt/c/kafka/kafka_2.13-3.7.0/bin/kafka-consumer-groups.sh \
-  --bootstrap-server localhost:9092 \
-  --describe --group order-consumer-group
-```
-
----
-
-## 📄 License
-
-This project is for educational purposes.
-
----
-
-## 🤝 Contributing
-
-Feel free to submit issues and enhancement requests!
